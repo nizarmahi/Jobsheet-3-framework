@@ -1,40 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+## Laporan Praktikum
 
-## Getting Started
+|  | Pemrograman Berbasis Framework 2025 |
+|--|--|
+| NIM |  2241720185 |
+| Nama |  Mochammad Nizar Mahi |
+| Kelas | TI - 3B |
+| Materi | Pengenalan NEXT.JS |
 
-First, run the development server:
+## Langkah Praktikum 
+### 1. Membuat Project Baru dengan NEXT.JS
+Hasil tampilan dari project baru Next.js
+![](../assets/Langkah1.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 2. Membuat Halaman dengan Server-Side Rendering (SSR)
+Ubah isi file index.tsx menjadi seperti ini.
+```tsx
+import React from "react";
+
+const HomePage = () => {
+  return(
+    <div>
+      <h1>Selamat Datang di Website Saya</h1>
+      <p>Ini adalah halaman utama saya</p>
+    </div>
+  );
+};
+
+export default HomePage;
 ```
+Hasil Tampilan
+![](../assets/Langkah2.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Menggunaka Static Site Generation (SSG)
+Buat file baru di direktori pages dengan nama blog.js
+```js
+import React from "react";
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+const Blog = ({ posts }) => {
+    return (
+        <div className="blog">
+            <h1>Blog Saya</h1>
+            {posts.map((post) => (
+                <div key={post.id} className="post">
+                    <h2>{post.title}</h2>
+                    <p>{post.content}</p>
+                </div>
+            ))}
+        </div>
+    );
+};
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+export async function getStaticProps() {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const posts = await res.json();
+    return {
+        props: { posts },
+    };
+}
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+export default Blog;
+```
+Hasil Tampilan
+![](../assets/Langkah3.png)
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Menggunakan Dynamic Routes
+Buat direktori baru di direktori pages dengan nama blog dan buat file baru slug.js
+```js
+import { useRouter } from 'next/router';
 
-## Learn More
+const BlogPost = () => {
+    const router = useRouter();
+    const { slug } = router.query;
+    
+    return (
+        <div>
+            <h1>Blog Post : {slug} </h1>
+            <p>Ini adalah blog post dengan slug { slug }</p>
+        </div>
+    );
+};
 
-To learn more about Next.js, take a look at the following resources:
+export default BlogPost;
+```
+Hasil tampilan
+![](../assets/Langkah4.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+### 5. Menggunakan API Routes
+Buat file didalam direktori api dengan nama product.js
+```js
+export default async function handler(req, res) {
+    const response = await fetch('https://fakestoreapi.com/products');
+    const products = await response.json();
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    res.status(200).json(products);
+}
+```
+Lalu buat file lagi di dalam folder pages dengan nama products.js dengan isi sebagai berikut.
+```js
+import { useState, useEffect } from "react";
 
-## Deploy on Vercel
+const ProductList = () => {
+    const [products, setProducts] = useState([]);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const response = await fetch('/api/products');
+            const products = await response.json();
+            setProducts(products);
+        };
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+        fetchProducts();
+    }, []);
+
+    return (
+        <div>
+            <h1>Product List</h1>
+            <ul>
+                {products.map((product) => (
+                    <li key={product.id}>{product.title}</li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default ProductList;
+```
+Hasil tampilan
+![](../assets/Langkah5.png)
+
+### 6. Menggunakan Link Component
+Modifikasi file pages/index.tsx
+```tsx
+import Link from 'next/link';
+
+const HomePage = () => {
+  return(
+    <div>
+      <h1>Selamat Datang di Website Saya</h1>
+      <p>Ini adalah halaman utama saya</p>
+      <Link href="/about">
+        Tentang Kami
+      </Link>
+    </div>
+  );
+};
+
+export default HomePage;
+```
+Buat file baru dengan nama about.js
+
+```js
+const AboutPage = () => {
+    return (
+        <div>
+            <h1>Tentang Kami</h1>
+            <p>Kami adalah perusahaan yang mengkhususkan diri dalam pembuatan website berkualitas tinggi.</p>
+        </div>
+    );
+};
+
+export default AboutPage;
+```
+Hasil Tampilan
+![](../assets/Langkah6a.png)
+![](../assets/Langkah6b.png)
+
+## Tugas
+### 1. Buat halaman baru dengan menggunakan Static Site Generation (SSG) yang menampilkan daftar pengguna dari API https://jsonplaceholder.typicode.com/users.
+### 2. Implementasikan Dynamic Routes untuk menampilkan detail pengguna berdasarkan ID.
+### 3. Buat API route yang mengembalikan data cuaca dari API eksternal (misalnya, OpenWeatherMap) dan tampilkan data tersebut di halaman front-end.
+
+### Jawab:
